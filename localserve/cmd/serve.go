@@ -32,13 +32,10 @@ func getListenAddr() string {
 }
 
 func startServer() error {
-  http.HandleFunc("/", indexHandler)
+  rootDir := "./test-dir"
+  fs := http.FileServer(http.Dir(rootDir))
 
   fmt.Println("Starting server at", getListenAddr())
-
-  return http.ListenAndServe(getListenAddr(), nil)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request){
-  w.Write([]byte("indexHandler was called\n"))
+  fmt.Println("Serving files in directory", rootDir)
+  return http.ListenAndServe(getListenAddr(), fs)
 }
