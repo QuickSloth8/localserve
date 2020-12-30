@@ -10,6 +10,7 @@
 
 ## Future Features
 
+* [ ] Logging, and printing connections to std out.
 * [ ] Easily runnable app (double click), with easy configs access.
 * [ ] Command completion.
 * [ ] Client auth.
