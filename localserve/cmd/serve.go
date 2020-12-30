@@ -26,9 +26,9 @@ var (
 )
 
 func init() {
-  serveCmd.PersistentFlags().StringVar(&listenAddr, "listenAddr", "127.0.0.1", "The IP to listen on")
+  // serveCmd.PersistentFlags().StringVar(&listenAddr, "listenAddr", "127.0.0.1", "The IP to listen on")
   serveCmd.PersistentFlags().StringVar(&listenPort, "listenPort", "3223", "The port to listen on")
-  viper.BindPFlag("listenAddr", serveCmd.PersistentFlags().Lookup("listenAddr"))
+  // viper.BindPFlag("listenAddr", serveCmd.PersistentFlags().Lookup("listenAddr"))
   viper.BindPFlag("listenPort", serveCmd.PersistentFlags().Lookup("listenPort"))
 
   serveRoot, err := os.Getwd()
