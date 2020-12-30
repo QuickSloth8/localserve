@@ -12,8 +12,9 @@ import (
 
 
 var (
-  listenAddr string
-  listenPort string
+  // flagServeAddr string
+  flagServePort string
+  flagServeRoot string
 
   serveCmd = &cobra.Command{
     Use:   "serve",
@@ -26,31 +27,46 @@ var (
 )
 
 func init() {
-  // serveCmd.PersistentFlags().StringVar(&listenAddr, "listenAddr", "127.0.0.1", "The IP to listen on")
-  serveCmd.PersistentFlags().StringVar(&listenPort, "listenPort", "3223", "The port to listen on")
-  // viper.BindPFlag("listenAddr", serveCmd.PersistentFlags().Lookup("listenAddr"))
-  viper.BindPFlag("listenPort", serveCmd.PersistentFlags().Lookup("listenPort"))
+  // serveCmd.PersistentFlags().StringVar(&flagServeAddr, "serveAddr", "127.0.0.1", "The IP to listen on")
+  serveCmd.PersistentFlags().StringVar(&flagServePort, "servePort", "3223",
+    "The port to listen on")
+  serveCmd.PersistentFlags().StringVar(&flagServeRoot, "serveRoot", "current directory",
+    "The directory to be served")
+  // viper.BindPFlag("serveAddr", serveCmd.PersistentFlags().Lookup("serveAddr"))
+  viper.BindPFlag("servePort", serveCmd.PersistentFlags().Lookup("servePort"))
+  viper.BindPFlag("serveRoot", serveCmd.PersistentFlags().Lookup("serveRoot"))
 
-  serveRoot, err := os.Getwd()
+  defaultServeRoot, err := os.Getwd()
   if err != nil {
     panic(err)
   }
-  viper.SetDefault("serveRoot", serveRoot)
+  if flagServeRoot == "current directory" {
+    viper.Set("serveRoot", defaultServeRoot)
+  }
+  viper.SetDefault("serveAddr", "127.0.0.1")
 
   rootCmd.AddCommand(serveCmd)
 }
 
-func getListenAddr() string {
-  listenAddr := viper.GetString("listenAddr")
-  listenPort := viper.GetString("listenPort")
-  return listenAddr + ":" + listenPort
+func getFullServeAddr() string {
+  serveAddr := viper.GetString("serveAddr")
+  servePort := viper.GetString("servePort")
+  return serveAddr + ":" + servePort
+}
+
+func getServeConfigsStr() string {
+  strFullServeAddr := getFullServeAddr()
+  strServeRoot := viper.GetString("serveRoot")
+
+  return fmt.Sprintf("Serving %q at %q",
+    strServeRoot, strFullServeAddr)
 }
 
 func startServer() error {
   serveRoot := viper.GetString("serveRoot")
   fs := http.FileServer(http.Dir(serveRoot))
 
-  fmt.Println("Starting server at", getListenAddr())
-  fmt.Println("Serving files in directory", serveRoot)
-  return http.ListenAndServe(getListenAddr(), fs)
+  fmt.Println(getServeConfigsStr())
+
+  return http.ListenAndServe(getFullServeAddr(), fs)
 }
