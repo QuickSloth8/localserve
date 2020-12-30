@@ -10,6 +10,7 @@
 
 ## Future Features
 
+* [ ] Easily runnable app (double click), with easy configs access
 * [ ] Client auth.
 * [ ] Navagation to other directories in the OS (even out of the sub-tree scope).
 * [ ] Prettier UI (CSS & JS), and propobly a seperate front-end.
