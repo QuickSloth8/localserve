@@ -6,39 +6,67 @@ import (
   "github.com/spf13/viper"
   "net/http"
   "log"
+  "os"
+)
+
+
+
+var (
+  // flagServeAddr string
+  flagServePort string
+  flagServeRoot string
+
+  serveCmd = &cobra.Command{
+    Use:   "serve",
+    Short: "Start server",
+    Long:  `Start server on your device`,
+    Run: func(cmd *cobra.Command, args []string) {
+      log.Fatal(startServer())
+    },
+  }
 )
 
 func init() {
-  // default listening addr and port
-  viper.SetDefault("listenAddr", "127.0.0.1")
-  viper.SetDefault("listenPort", "3223")
+  // serveCmd.PersistentFlags().StringVar(&flagServeAddr, "serveAddr", "127.0.0.1", "The IP to listen on")
+  serveCmd.PersistentFlags().StringVar(&flagServePort, "servePort", "3223",
+    "The port to listen on")
+  serveCmd.PersistentFlags().StringVar(&flagServeRoot, "serveRoot", "current directory",
+    "The directory to be served")
+  // viper.BindPFlag("serveAddr", serveCmd.PersistentFlags().Lookup("serveAddr"))
+  viper.BindPFlag("servePort", serveCmd.PersistentFlags().Lookup("servePort"))
+  viper.BindPFlag("serveRoot", serveCmd.PersistentFlags().Lookup("serveRoot"))
+
+  defaultServeRoot, err := os.Getwd()
+  if err != nil {
+    panic(err)
+  }
+  if flagServeRoot == "current directory" {
+    viper.Set("serveRoot", defaultServeRoot)
+  }
+  viper.SetDefault("serveAddr", "127.0.0.1")
 
   rootCmd.AddCommand(serveCmd)
 }
 
-var serveCmd = &cobra.Command{
-  Use:   "serve",
-  Short: "Start server",
-  Long:  `Start server on your device`,
-  Run: func(cmd *cobra.Command, args []string) {
-    log.Fatal(startServer())
-  },
+func getFullServeAddr() string {
+  serveAddr := viper.GetString("serveAddr")
+  servePort := viper.GetString("servePort")
+  return serveAddr + ":" + servePort
 }
 
-func getListenAddr() string {
-  listenAddr := viper.GetString("listenAddr")
-  listenPort := viper.GetString("listenPort")
-  return listenAddr + ":" + listenPort
+func getServeConfigsStr() string {
+  strFullServeAddr := getFullServeAddr()
+  strServeRoot := viper.GetString("serveRoot")
+
+  return fmt.Sprintf("Serving %q at %q",
+    strServeRoot, strFullServeAddr)
 }
 
 func startServer() error {
-  http.HandleFunc("/", indexHandler)
+  serveRoot := viper.GetString("serveRoot")
+  fs := http.FileServer(http.Dir(serveRoot))
 
-  fmt.Println("Starting server at", getListenAddr())
+  fmt.Println(getServeConfigsStr())
 
-  return http.ListenAndServe(getListenAddr(), nil)
-}
-
-func indexHandler(w http.ResponseWriter, r *http.Request){
-  w.Write([]byte("indexHandler was called\n"))
+  return http.ListenAndServe(getFullServeAddr(), fs)
 }
