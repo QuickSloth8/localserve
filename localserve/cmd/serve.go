@@ -7,6 +7,7 @@ import (
   "net/http"
   "log"
   "os"
+  "localserve/internal"
 )
 
 
@@ -43,7 +44,7 @@ func init() {
   if flagServeRoot == "current directory" {
     viper.Set("serveRoot", defaultServeRoot)
   }
-  viper.SetDefault("serveAddr", "127.0.0.1")
+  viper.SetDefault("serveAddr", internal.GetIp())
 
   rootCmd.AddCommand(serveCmd)
 }
