@@ -103,10 +103,15 @@ func handleServeRootCleaning() {
 }
 
 func startServer() error {
-	handleServeRootCleaning()
+	handleServeRootCleaning() // removes currDirStr from serveRoot
 	serveRoot := viper.GetString("serveRoot")
 
-	fs := http.FileServer(http.Dir(serveRoot))
+	// fs := http.FileServer(http.Dir(serveRoot))
+
+	fs := internal.CustomFileServer{
+		Handler: http.FileServer(http.Dir(serveRoot)),
+	}
+
 	fmt.Println(getServeConfigsStr())
 	return http.ListenAndServe(getFullServeAddr(), fs)
 }
