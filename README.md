@@ -1,11 +1,12 @@
-# LocalServe - sharing files easily
+# LocalServe - sharing files easily on LAN
 
 ## Features
 
 * Wide configurations options: default, cmd flags.
 * Configurable file serving.
-* Simple HTTP UI.
+* Simple & clear HTML UI.
 * Preview before download.
+* Automatic serve IP interface & address detection.
 
 
 ## Future Features
