@@ -19,4 +19,3 @@
 * [ ] Config files support & custom configs saving and re-usage.
 * [ ] Download all (optionally with compression).
 * [ ] Cool UI related stuff, like animations, custom cursor, sounds.
-
