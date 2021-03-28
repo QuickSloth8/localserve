@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"localserve/localserve/internal"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -74,7 +75,6 @@ func init() {
 	viper.BindPFlag("serveRoot",
 		serveCmd.PersistentFlags().Lookup("serveRoot"))
 
-	fmt.Println(internal.GetIp())
 	viper.SetDefault("serveAddr", internal.GetIp())
 
 	// add command
@@ -91,7 +91,7 @@ func getServeConfigsStr() string {
 	strFullServeAddr := getFullServeAddr()
 	strServeRoot := viper.GetString("serveRoot")
 
-	return fmt.Sprintf("Serving %q at %q",
+	return fmt.Sprintf("\nServing %q at %q\n",
 		strServeRoot, strFullServeAddr)
 }
 
@@ -106,12 +106,22 @@ func startServer() error {
 	handleServeRootCleaning() // removes currDirStr from serveRoot
 	serveRoot := viper.GetString("serveRoot")
 
-	// fs := http.FileServer(http.Dir(serveRoot))
-
 	fs := internal.CustomFileServer{
 		Handler: http.FileServer(http.Dir(serveRoot)),
 	}
 
+	// print serve configs to user
 	fmt.Println(getServeConfigsStr())
-	return http.ListenAndServe(getFullServeAddr(), fs)
+
+	err := http.ListenAndServe(getFullServeAddr(), fs)
+	if err != nil {
+		// if port is already taken
+		if err.(*net.OpError).Op == "listen" {
+			fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+		} else {
+			log.Fatal(err)
+		}
+	}
+
+	return nil
 }
