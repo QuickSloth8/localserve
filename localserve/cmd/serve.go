@@ -29,7 +29,7 @@ var (
 		Short: "Start server",
 		Long:  `Start server on your device`,
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Fatal(startServer())
+			startServer()
 		},
 	}
 )
