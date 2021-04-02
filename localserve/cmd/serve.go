@@ -1,13 +1,17 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"localserve/localserve/internal"
-	"log"
+	"localserve/localserve/internal/tuned_log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -29,7 +33,7 @@ var (
 		Short: "Start server",
 		Long:  `Start server on your device`,
 		Run: func(cmd *cobra.Command, args []string) {
-			log.Fatal(startServer())
+			startServer()
 		},
 	}
 )
@@ -57,14 +61,20 @@ func init() {
 		&flagServePort,
 		"servePort",
 		defaultServePort,
-		"The port to listen on",
+		"the port to listen on",
 	)
 
 	serveCmd.PersistentFlags().StringVar(
 		&flagServeRoot,
 		"serveRoot",
 		defaultServeRootHelp,
-		"The directory to be served",
+		"the directory to be served",
+	)
+
+	serveCmd.PersistentFlags().Bool(
+		"silent",
+		false,
+		"suppress all output to stdout",
 	)
 
 	// bind command flags to viper
@@ -74,6 +84,8 @@ func init() {
 		serveCmd.PersistentFlags().Lookup("servePort"))
 	viper.BindPFlag("serveRoot",
 		serveCmd.PersistentFlags().Lookup("serveRoot"))
+	viper.BindPFlag("silent",
+		serveCmd.PersistentFlags().Lookup("silent"))
 
 	viper.SetDefault("serveAddr", internal.GetIp())
 
@@ -102,7 +114,12 @@ func handleServeRootCleaning() {
 	}
 }
 
-func startServer() error {
+func startServer() {
+	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
+
+	// set global silent output flag in tuned_log package
+	tuned_log.SetSilent(viper.GetBool("silent"))
+
 	handleServeRootCleaning() // removes currDirStr from serveRoot
 	serveRoot := viper.GetString("serveRoot")
 
@@ -110,18 +127,46 @@ func startServer() error {
 		Handler: http.FileServer(http.Dir(serveRoot)),
 	}
 
-	// print serve configs to user
-	fmt.Println(getServeConfigsStr())
-
-	err := http.ListenAndServe(getFullServeAddr(), fs)
-	if err != nil {
-		// if port is already taken
-		if err.(*net.OpError).Op == "listen" {
-			fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
-		} else {
-			log.Fatal(err)
-		}
+	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
+	srv := &http.Server{
+		Addr:    getFullServeAddr(),
+		Handler: fs,
 	}
 
-	return nil
+	// set keyboard interrupt listener channel
+	done := make(chan os.Signal)
+	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
+	// start server
+	go func() {
+		defer func() {
+			done <- syscall.SIGINT
+		}()
+
+		err := srv.ListenAndServe()
+		if err != nil {
+			// if port is already taken
+			if _, ok := err.(*net.OpError); ok && err.(*net.OpError).Op == "listen" {
+				// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+				msg := fmt.Sprintf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+				tuned_log.ErrorPrintToUser(msg, tunedLogger)
+			} else {
+				tunedLogger.Fatal(err)
+			}
+		}
+	}()
+
+	// handle keyboard interrupt & graceful termination
+	<-done
+
+	timeoutSecs := 30 * time.Second
+	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
+	tuned_log.InfoPrintToUser(msg, tunedLogger)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeoutSecs)
+	// ctx := context.Background()
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Println("Server Shutdown Failed - ", err)
+	}
+	defer cancel()
 }
