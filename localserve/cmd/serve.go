@@ -72,7 +72,7 @@ func init() {
 	)
 
 	serveCmd.PersistentFlags().Bool(
-		"quit",
+		"silent",
 		false,
 		"suppress all output to stdout",
 	)
@@ -84,8 +84,8 @@ func init() {
 		serveCmd.PersistentFlags().Lookup("servePort"))
 	viper.BindPFlag("serveRoot",
 		serveCmd.PersistentFlags().Lookup("serveRoot"))
-	viper.BindPFlag("quit",
-		serveCmd.PersistentFlags().Lookup("quit"))
+	viper.BindPFlag("silent",
+		serveCmd.PersistentFlags().Lookup("silent"))
 
 	viper.SetDefault("serveAddr", internal.GetIp())
 

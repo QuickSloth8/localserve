@@ -2,3 +2,8 @@
 {"level":"info","time":"2021-04-02T11:53:51+03:00","message":"GET /"}
 {"level":"info","time":"2021-04-02T11:53:51+03:00","message":"GET /favicon.ico"}
 {"level":"info","time":"2021-04-02T11:54:09+03:00","message":"GET /go.mod"}
+{"level":"info","time":"2021-04-02T11:56:59+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T11:57:06+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T11:57:06+03:00","message":"GET /favicon.ico"}
+{"level":"info","time":"2021-04-02T11:57:32+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T11:57:32+03:00","message":"GET /favicon.ico"}
