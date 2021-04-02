@@ -15,6 +15,7 @@
 * [ ] auto-terminate
 * [ ] Easily runnable app (double click), with easy configs access.
 * [ ] Command completion.
+* [ ] HTTPS.
 * [ ] Client auth.
 * [ ] Navigation to other directories in the OS (even out of the sub-tree scope).
 * [ ] Prettier UI (CSS & JS), and probably a separate front-end.

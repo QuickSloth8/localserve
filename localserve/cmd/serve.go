@@ -123,19 +123,29 @@ func startServer() {
 	handleServeRootCleaning() // removes currDirStr from serveRoot
 	serveRoot := viper.GetString("serveRoot")
 
-	fs := internal.CustomFileServer{
-		Handler: http.FileServer(http.Dir(serveRoot)),
-	}
-
-	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
-	srv := &http.Server{
-		Addr:    getFullServeAddr(),
-		Handler: fs,
-	}
+	flagIdleTimeout := 10 * time.Second
 
 	// set keyboard interrupt listener channel
 	done := make(chan os.Signal)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
+	fs := internal.NewCustomFileServerWithTimeout(
+		http.FileServer(http.Dir(serveRoot)),
+		flagIdleTimeout,
+		done,
+	)
+	// fs := internal.CustomFileServer{
+	// 	Handler:     http.FileServer(http.Dir(serveRoot)),
+	// 	MaxIdleTime: time.Duration(flagIdleTimeout),
+	// 	Atw:         atw,
+	// }
+
+	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
+	srv := &http.Server{
+		Addr:        getFullServeAddr(),
+		Handler:     fs,
+		IdleTimeout: time.Duration(5 * time.Second),
+	}
 
 	// start server
 	go func() {
@@ -159,7 +169,7 @@ func startServer() {
 	// handle keyboard interrupt & graceful termination
 	<-done
 
-	timeoutSecs := 30 * time.Second
+	timeoutSecs := 3 * time.Second
 	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
 	tuned_log.InfoPrintToUser(msg, tunedLogger)
 
