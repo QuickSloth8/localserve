@@ -12,6 +12,7 @@
 
 ## Future Features
 
+* [ ] auto-terminate
 * [ ] Easily runnable app (double click), with easy configs access.
 * [ ] Command completion.
 * [ ] Client auth.
