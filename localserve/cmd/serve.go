@@ -12,8 +12,9 @@ var (
 	defaultServeRootHelp string
 	currDirStr           string = "current directory - "
 
-	defaultServePort string
-	defaultServeRoot string
+	defaultServePort   string
+	defaultServeRoot   string
+	defaultIdleTimeout int
 
 	// flagServeAddr string
 	flagServePort string
@@ -40,6 +41,8 @@ func init() {
 	}
 
 	defaultServeRootHelp = currDirStr + defaultServeRoot
+
+	defaultIdleTimeout = 120
 
 	// serveCmd.PersistentFlags().StringVar(
 	//   &flagServeAddr,
@@ -68,6 +71,12 @@ func init() {
 		"suppress all output to stdout",
 	)
 
+	serveCmd.PersistentFlags().Int(
+		"auto-term",
+		defaultIdleTimeout,
+		"Auto terminate after duration in seconds\nSet it to zero or less to keep server running",
+	)
+
 	// bind command flags to viper
 	// viper.BindPFlag("serveAddr",
 	//   serveCmd.PersistentFlags().Lookup("serveAddr"))
@@ -77,6 +86,8 @@ func init() {
 		serveCmd.PersistentFlags().Lookup("serveRoot"))
 	viper.BindPFlag("silent",
 		serveCmd.PersistentFlags().Lookup("silent"))
+	viper.BindPFlag("auto-term",
+		serveCmd.PersistentFlags().Lookup("auto-term"))
 
 	viper.SetDefault("serveAddr", internal.GetIp())
 

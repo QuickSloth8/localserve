@@ -37,31 +37,36 @@ func handleServeRootCleaning() {
 	}
 }
 
+func getFileSystem(doneChan chan os.Signal) *internal.CustomFileServer {
+	flagIdleTimeout := viper.GetInt("auto-term")
+
+	handleServeRootCleaning() // removes currDirStr from serveRoot
+	serveRoot := viper.GetString("serveRoot")
+	handler := http.FileServer(http.Dir(serveRoot))
+
+	if flagIdleTimeout > 0 {
+		convertedIdleTimeout := time.Duration(flagIdleTimeout) * time.Second
+		return internal.NewCustomFileServerWithTimeout(
+			handler,
+			convertedIdleTimeout,
+			doneChan,
+		)
+	} else {
+		return internal.NewCustomFileServer(handler)
+	}
+}
+
 func startServer() {
 	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
 
 	// set global silent output flag in tuned_log package
 	tuned_log.SetSilent(viper.GetBool("silent"))
 
-	handleServeRootCleaning() // removes currDirStr from serveRoot
-	serveRoot := viper.GetString("serveRoot")
-
-	flagIdleTimeout := 10 * time.Second
-
 	// set keyboard interrupt listener channel
 	done := make(chan os.Signal)
 	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
 
-	fs := internal.NewCustomFileServerWithTimeout(
-		http.FileServer(http.Dir(serveRoot)),
-		flagIdleTimeout,
-		done,
-	)
-	// fs := internal.CustomFileServer{
-	// 	Handler:     http.FileServer(http.Dir(serveRoot)),
-	// 	MaxIdleTime: time.Duration(flagIdleTimeout),
-	// 	Atw:         atw,
-	// }
+	fs := getFileSystem(done)
 
 	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
 	srv := &http.Server{
@@ -92,7 +97,7 @@ func startServer() {
 	// handle keyboard interrupt & graceful termination
 	<-done
 
-	timeoutSecs := 3 * time.Second
+	timeoutSecs := 30 * time.Second
 	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
 	tuned_log.InfoPrintToUser(msg, tunedLogger)
 

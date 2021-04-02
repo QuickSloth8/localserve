@@ -33,6 +33,10 @@ func NewCustomFileServerWithTimeout(h http.Handler, maxIdleTime time.Duration,
 	return cfs
 }
 
+func NewCustomFileServer(h http.Handler) *CustomFileServer {
+	return &CustomFileServer{Handler: h, atw: nil}
+}
+
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 	tunedLogger := tuned_log.GetDefaultLogger()
 	defer tuned_log.CloseDefaultLogger()
@@ -41,7 +45,10 @@ func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
-	cfs.atw.ResetTimer() // every new request, the atw timer gets reset
+	if cfs.atw != nil {
+		cfs.atw.ResetTimer() // every new request, the atw timer gets reset
+	}
+
 	cfs.PrintRequestSummary(req)
 	cfs.Handler.ServeHTTP(respW, req)
 }
