@@ -1,20 +1,20 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"localserve/localserve/internal"
 	"localserve/localserve/internal/tuned_log"
 	"net"
 	"net/http"
 	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-)
-
-var (
-	tunedLogger = tuned_log.GetDefaultLogger() // logger should be closed in startServe
 )
 
 var (
@@ -115,8 +115,6 @@ func handleServeRootCleaning() {
 }
 
 func startServer() error {
-	defer tuned_log.CloseDefaultLogger()
-
 	silent := viper.GetBool("silent")
 
 	handleServeRootCleaning() // removes currDirStr from serveRoot
@@ -127,21 +125,48 @@ func startServer() error {
 		Silent:  silent,
 	}
 
-	// print serve configs to user
-	// fmt.Println(getServeConfigsStr())
 	tuned_log.PrintInfoToUser(getServeConfigsStr(), tunedLogger, silent)
-
-	err := http.ListenAndServe(getFullServeAddr(), fs)
-	if err != nil {
-		// if port is already taken
-		if err.(*net.OpError).Op == "listen" {
-			// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
-			msg := "Opps! ... %q seems to be taken !\n\n"
-			tuned_log.PrintErrorToUser(msg, tunedLogger, silent)
-		} else {
-			tunedLogger.Fatal(err)
-		}
+	srv := &http.Server{
+		Addr:    getFullServeAddr(),
+		Handler: fs,
 	}
+
+	// set keyboard interrupt listener channel
+	done := make(chan os.Signal)
+	signal.Notify(done, os.Interrupt, syscall.SIGTERM, syscall.SIGINT)
+
+	// start server
+	go func() {
+		defer func() {
+			done <- syscall.SIGINT
+		}()
+
+		err := srv.ListenAndServe()
+		if err != nil {
+			// if port is already taken
+			if _, ok := err.(*net.OpError); ok && err.(*net.OpError).Op == "listen" {
+				// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+				msg := fmt.Sprintf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+				tuned_log.PrintErrorToUser(msg, tunedLogger, silent)
+			} else {
+				tunedLogger.Fatal(err)
+			}
+		}
+	}()
+
+	// handle keyboard interrupt & graceful termination
+	<-done
+
+	timeoutSecs := 30 * time.Second
+	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
+	tuned_log.PrintInfoToUser(msg, tunedLogger, silent)
+
+	ctx, cancel := context.WithTimeout(context.Background(), timeoutSecs)
+	// ctx := context.Background()
+	if err := srv.Shutdown(ctx); err != nil {
+		fmt.Println("Server Shutdown Failed - ", err)
+	}
+	defer cancel()
 
 	return nil
 }

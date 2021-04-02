@@ -10,3 +10,26 @@
 {"level":"info","time":"2021-04-02T12:08:18+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
 {"level":"info","time":"2021-04-02T12:08:25+03:00","message":"GET /"}
 {"level":"info","time":"2021-04-02T12:08:26+03:00","message":"GET /favicon.ico"}
+{"level":"info","time":"2021-04-02T13:00:59+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"error","time":"2021-04-02T13:00:59+03:00","message":"Opps! ... %q seems to be taken !\n\n"}
+{"level":"info","time":"2021-04-02T13:02:21+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"error","time":"2021-04-02T13:02:21+03:00","message":"Opps! ... \"10.0.0.24:3223\" seems to be taken !\n\n"}
+{"level":"info","time":"2021-04-02T13:03:25+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"error","time":"2021-04-02T13:03:25+03:00","message":"Opps! ... \"10.0.0.24:3223\" seems to be taken !\n\n"}
+{"level":"info","time":"2021-04-02T13:04:06+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"error","time":"2021-04-02T13:04:06+03:00","message":"Opps! ... \"10.0.0.24:3223\" seems to be taken !\n\n"}
+{"level":"info","time":"2021-04-02T13:04:45+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T13:08:43+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T13:08:51+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T13:09:05+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T13:09:05+03:00","message":"GET /favicon.ico"}
+{"level":"info","time":"2021-04-02T13:13:59+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T14:51:33+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T14:51:39+03:00","message":"Server termination initiated ..."}
+{"level":"info","time":"2021-04-02T14:51:39+03:00","message":"Graceful shutting down timer: 30ssecs"}
+{"level":"info","time":"2021-04-02T14:53:14+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T14:53:19+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T14:55:51+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T14:55:55+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T14:56:03+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T14:56:07+03:00","message":"Server termination initiated (30s max)"}
