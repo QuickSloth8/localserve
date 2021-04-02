@@ -42,7 +42,11 @@ var (
 
 func initDefaultLogger() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	defaultAppLogger = &defaultLogger{zerolog.New(os.Stderr).With().Timestamp().Logger()}
+	logFile, err := os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if err != nil {
+		panic(err)
+	}
+	defaultAppLogger = &defaultLogger{zerolog.New(logFile).With().Timestamp().Logger()}
 }
 
 func destroyDefaultLogger() {

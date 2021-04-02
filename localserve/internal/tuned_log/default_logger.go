@@ -24,10 +24,10 @@ func (dl defaultLogger) Error(msg string) {
 	dl.zeroLogger.Error().Msg(msg)
 }
 
-func (dl defaultLogger) Fatal(msg string) {
-	dl.zeroLogger.Fatal().Msg(msg)
+func (dl defaultLogger) Fatal(err error) {
+	dl.zeroLogger.Fatal().Err(err)
 }
 
-func (dl defaultLogger) Panic(msg string) {
-	dl.zeroLogger.Panic().Msg(msg)
+func (dl defaultLogger) Panic(err error) {
+	dl.zeroLogger.Panic().Err(err)
 }

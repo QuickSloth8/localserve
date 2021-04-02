@@ -24,14 +24,14 @@ func ErrorOnce(msg string) {
 	onceLogger.Error(msg)
 }
 
-func FatalOnce(msg string) {
+func FatalOnce(err error) {
 	onceLogger := GetDefaultLogger()
 	defer CloseDefaultLogger()
-	onceLogger.Fatal(msg)
+	onceLogger.Fatal(err)
 }
 
-func PanicOnce(msg string) {
+func PanicOnce(err error) {
 	onceLogger := GetDefaultLogger()
 	defer CloseDefaultLogger()
-	onceLogger.Panic(msg)
+	onceLogger.Panic(err)
 }

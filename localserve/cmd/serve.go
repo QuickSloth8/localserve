@@ -3,7 +3,7 @@ package cmd
 import (
 	"fmt"
 	"localserve/localserve/internal"
-	"log"
+	"localserve/localserve/internal/tuned_log"
 	"net"
 	"net/http"
 	"os"
@@ -11,6 +11,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+)
+
+var (
+	tunedLogger = tuned_log.GetDefaultLogger() // logger should be closed in startServe
 )
 
 var (
@@ -57,14 +61,20 @@ func init() {
 		&flagServePort,
 		"servePort",
 		defaultServePort,
-		"The port to listen on",
+		"the port to listen on",
 	)
 
 	serveCmd.PersistentFlags().StringVar(
 		&flagServeRoot,
 		"serveRoot",
 		defaultServeRootHelp,
-		"The directory to be served",
+		"the directory to be served",
+	)
+
+	serveCmd.PersistentFlags().Bool(
+		"quit",
+		false,
+		"suppress all output to stdout",
 	)
 
 	// bind command flags to viper
@@ -74,6 +84,8 @@ func init() {
 		serveCmd.PersistentFlags().Lookup("servePort"))
 	viper.BindPFlag("serveRoot",
 		serveCmd.PersistentFlags().Lookup("serveRoot"))
+	viper.BindPFlag("quit",
+		serveCmd.PersistentFlags().Lookup("quit"))
 
 	viper.SetDefault("serveAddr", internal.GetIp())
 
@@ -103,23 +115,31 @@ func handleServeRootCleaning() {
 }
 
 func startServer() error {
+	defer tuned_log.CloseDefaultLogger()
+
+	silent := viper.GetBool("silent")
+
 	handleServeRootCleaning() // removes currDirStr from serveRoot
 	serveRoot := viper.GetString("serveRoot")
 
 	fs := internal.CustomFileServer{
 		Handler: http.FileServer(http.Dir(serveRoot)),
+		Silent:  silent,
 	}
 
 	// print serve configs to user
-	fmt.Println(getServeConfigsStr())
+	// fmt.Println(getServeConfigsStr())
+	tuned_log.PrintInfoToUser(getServeConfigsStr(), tunedLogger, silent)
 
 	err := http.ListenAndServe(getFullServeAddr(), fs)
 	if err != nil {
 		// if port is already taken
 		if err.(*net.OpError).Op == "listen" {
-			fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+			// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
+			msg := "Opps! ... %q seems to be taken !\n\n"
+			tuned_log.PrintErrorToUser(msg, tunedLogger, silent)
 		} else {
-			log.Fatal(err)
+			tunedLogger.Fatal(err)
 		}
 	}
 
