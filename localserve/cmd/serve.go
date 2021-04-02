@@ -115,6 +115,9 @@ func handleServeRootCleaning() {
 }
 
 func startServer() error {
+	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
+
+	// set global silent output flag in tuned_log package
 	tuned_log.SetSilent(viper.GetBool("silent"))
 
 	handleServeRootCleaning() // removes currDirStr from serveRoot
@@ -124,7 +127,7 @@ func startServer() error {
 		Handler: http.FileServer(http.Dir(serveRoot)),
 	}
 
-	tuned_log.PrintInfoToUser(getServeConfigsStr(), tunedLogger)
+	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
 	srv := &http.Server{
 		Addr:    getFullServeAddr(),
 		Handler: fs,
@@ -146,7 +149,7 @@ func startServer() error {
 			if _, ok := err.(*net.OpError); ok && err.(*net.OpError).Op == "listen" {
 				// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
 				msg := fmt.Sprintf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
-				tuned_log.PrintErrorToUser(msg, tunedLogger)
+				tuned_log.ErrorPrintToUser(msg, tunedLogger)
 			} else {
 				tunedLogger.Fatal(err)
 			}
@@ -158,7 +161,7 @@ func startServer() error {
 
 	timeoutSecs := 30 * time.Second
 	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
-	tuned_log.PrintInfoToUser(msg, tunedLogger)
+	tuned_log.InfoPrintToUser(msg, tunedLogger)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutSecs)
 	// ctx := context.Background()

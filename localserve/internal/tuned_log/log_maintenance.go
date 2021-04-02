@@ -6,11 +6,10 @@ import (
 	"sync"
 
 	"github.com/rs/zerolog"
-	// "github.com/rs/zerolog/log"
 )
 
 // watches after defaultLogger usages, to insure cleaning
-// only after all users called CloseDefaultLogger()
+// only after all instances called CloseDefaultLogger()
 type defaultAppLoggerRefsCount struct {
 	numRefs int
 	mux     sync.Mutex
@@ -20,7 +19,6 @@ type defaultAppLoggerRefsCount struct {
 func (rc *defaultAppLoggerRefsCount) IncCount() {
 	rc.mux.Lock()
 	defer rc.mux.Unlock()
-
 	rc.numRefs++
 }
 
@@ -29,8 +27,8 @@ func (rc *defaultAppLoggerRefsCount) IncCount() {
 func (rc *defaultAppLoggerRefsCount) DecCount() (empty bool, err error) {
 	rc.mux.Lock()
 	defer rc.mux.Unlock()
-
 	rc.numRefs--
+
 	if rc.numRefs == 0 {
 		empty = true
 	} else if rc.numRefs < 0 {
@@ -67,6 +65,7 @@ func destroyDefaultLogger() {
 		panic(err)
 	}
 
+	// reset package state to a fresh one
 	defaultAppLogger = nil // let garbage-collector clear previous instance
 	refsCount.numRefs = 0  // reset instance count
 	initOnce = sync.Once{} // new fresh instance

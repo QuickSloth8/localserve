@@ -45,3 +45,18 @@
 {"level":"info","time":"2021-04-02T15:03:17+03:00","message":"GET /favicon.ico"}
 {"level":"info","time":"2021-04-02T15:03:34+03:00","message":"GET /"}
 {"level":"info","time":"2021-04-02T15:03:42+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T15:06:04+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T15:06:08+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T15:06:08+03:00","message":"Thank you for choosing LocalServe"}
+{"level":"info","time":"2021-04-02T15:06:12+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T15:06:16+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T15:06:16+03:00","message":"Thank you for choosing LocalServe"}
+{"level":"info","time":"2021-04-02T15:06:31+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T15:06:34+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T15:06:34+03:00","message":"\n\nThank you for choosing LocalServe\n"}
+{"level":"info","time":"2021-04-02T15:31:33+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T15:31:41+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T15:31:41+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T15:31:41+03:00","message":"GET /favicon.ico"}
+{"level":"info","time":"2021-04-02T15:31:44+03:00","message":"Server termination initiated (30s max)"}
+{"level":"info","time":"2021-04-02T15:31:47+03:00","message":"\nThank you for choosing LocalServe :)\n"}

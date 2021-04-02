@@ -15,7 +15,7 @@ func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 	tunedLogger := tuned_log.GetDefaultLogger()
 	defer tuned_log.CloseDefaultLogger()
 	msg := fmt.Sprintf("%s %s", req.Method, req.URL)
-	tuned_log.PrintInfoToUser(msg, tunedLogger)
+	tuned_log.InfoPrintToUser(msg, tunedLogger)
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
