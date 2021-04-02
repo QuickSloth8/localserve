@@ -43,6 +43,7 @@ var (
 	initOnce         = sync.Once{} // initDefaultLogger() once
 	refsCount        = defaultAppLoggerRefsCount{}
 	logFile          *os.File
+	silent           bool
 	defaultAppLogger *defaultLogger
 )
 

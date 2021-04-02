@@ -9,14 +9,13 @@ import (
 // Custom Handler that prints requested URLs before serving
 type CustomFileServer struct {
 	Handler http.Handler
-	Silent  bool
 }
 
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 	tunedLogger := tuned_log.GetDefaultLogger()
 	defer tuned_log.CloseDefaultLogger()
 	msg := fmt.Sprintf("%s %s", req.Method, req.URL)
-	tuned_log.PrintInfoToUser(msg, tunedLogger, cfs.Silent)
+	tuned_log.PrintInfoToUser(msg, tunedLogger)
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
