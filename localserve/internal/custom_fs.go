@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"localserve/localserve/internal/tuned_log"
 	"net/http"
 )
 
@@ -11,7 +12,9 @@ type CustomFileServer struct {
 }
 
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
-	fmt.Printf("%s: %s\n", req.Method, req.URL)
+	msg := fmt.Sprintf("%s: %s", req.Method, req.URL)
+	fmt.Println(msg) // this should be called only when a specific flag is present
+	tuned_log.InfoOnce(msg)
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
