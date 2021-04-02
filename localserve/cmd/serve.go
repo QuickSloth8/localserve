@@ -114,7 +114,7 @@ func handleServeRootCleaning() {
 	}
 }
 
-func startServer() error {
+func startServer() {
 	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
 
 	// set global silent output flag in tuned_log package
@@ -169,6 +169,4 @@ func startServer() error {
 		fmt.Println("Server Shutdown Failed - ", err)
 	}
 	defer cancel()
-
-	return nil
 }

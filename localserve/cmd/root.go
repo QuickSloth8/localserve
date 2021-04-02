@@ -25,9 +25,9 @@ device to a local http server`,
 )
 
 // Execute executes the root command.
-func Execute() error {
+func Execute() {
 	defer tuned_log.CloseDefaultLogger()
-	return rootCmd.Execute()
+	rootCmd.Execute()
 }
 
 func init() {
