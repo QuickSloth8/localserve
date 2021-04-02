@@ -7,3 +7,6 @@
 {"level":"info","time":"2021-04-02T11:57:06+03:00","message":"GET /favicon.ico"}
 {"level":"info","time":"2021-04-02T11:57:32+03:00","message":"GET /"}
 {"level":"info","time":"2021-04-02T11:57:32+03:00","message":"GET /favicon.ico"}
+{"level":"info","time":"2021-04-02T12:08:18+03:00","message":"\nServing \"C:\\\\Users\\\\Basel\\\\Documents\\\\Projects\\\\localserve\" at \"10.0.0.24:3223\"\n"}
+{"level":"info","time":"2021-04-02T12:08:25+03:00","message":"GET /"}
+{"level":"info","time":"2021-04-02T12:08:26+03:00","message":"GET /favicon.ico"}

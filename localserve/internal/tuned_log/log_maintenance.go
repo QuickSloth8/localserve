@@ -9,11 +9,14 @@ import (
 	// "github.com/rs/zerolog/log"
 )
 
+// watches after defaultLogger usages, to insure cleaning
+// only after all users called CloseDefaultLogger()
 type defaultAppLoggerRefsCount struct {
 	numRefs int
 	mux     sync.Mutex
 }
 
+// add one ref to the count
 func (rc *defaultAppLoggerRefsCount) IncCount() {
 	rc.mux.Lock()
 	defer rc.mux.Unlock()
@@ -21,6 +24,8 @@ func (rc *defaultAppLoggerRefsCount) IncCount() {
 	rc.numRefs++
 }
 
+// remove one ref from count, and initiate cleaning process
+// if no other references exist
 func (rc *defaultAppLoggerRefsCount) DecCount() (empty bool, err error) {
 	rc.mux.Lock()
 	defer rc.mux.Unlock()
@@ -35,14 +40,16 @@ func (rc *defaultAppLoggerRefsCount) DecCount() (empty bool, err error) {
 }
 
 var (
-	initOnce         = sync.Once{} // initDefaultLogger() once, if non-zero val exists
+	initOnce         = sync.Once{} // initDefaultLogger() once
 	refsCount        = defaultAppLoggerRefsCount{}
+	logFile          *os.File
 	defaultAppLogger *defaultLogger
 )
 
 func initDefaultLogger() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	logFile, err := os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	var err error
+	logFile, err = os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 	if err != nil {
 		panic(err)
 	}
@@ -53,7 +60,11 @@ func destroyDefaultLogger() {
 	refsCount.mux.Lock()
 	defer refsCount.mux.Unlock()
 
-	// close any files if they exist
+	// close all log files
+	err := logFile.Close()
+	if err != nil {
+		panic(err)
+	}
 
 	defaultAppLogger = nil // let garbage-collector clear previous instance
 	refsCount.numRefs = 0  // reset instance count
