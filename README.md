@@ -7,11 +7,11 @@
 * Simple & clear HTML UI.
 * Preview before download.
 * Automatic serve IP interface & address detection.
+* Logging, and printing connections to std out.
 
 
 ## Future Features
 
-* [ ] Logging, and printing connections to std out.
 * [ ] Easily runnable app (double click), with easy configs access.
 * [ ] Command completion.
 * [ ] Client auth.
