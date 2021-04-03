@@ -8,11 +8,11 @@
 * Preview before download.
 * Automatic serve IP interface & address detection.
 * Logging, and printing connections to std out.
+* Auto-termination & remote termination
 
 
 ## Future Features
 
-* [ ] auto-terminate
 * [ ] Easily runnable app (double click), with easy configs access.
 * [ ] Command completion.
 * [ ] HTTPS.
