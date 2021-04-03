@@ -44,17 +44,13 @@ func NewCustomFileServer(h http.Handler, fsTermChan chan os.Signal) *CustomFileS
 }
 
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
-	tunedLogger := tuned_log.GetDefaultLogger()
-	defer tuned_log.CloseDefaultLogger()
 	msg := fmt.Sprintf("%s %s", req.Method, req.URL)
-	tuned_log.InfoPrintToUser(msg, tunedLogger)
+	tuned_log.InfoPrintToUserOnce(msg)
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" && req.URL.String() == "/shutdown" {
-		tunedLogger := tuned_log.GetDefaultLogger()
-		tuned_log.InfoPrintToUser("Remote shutdown requested", tunedLogger)
-		tuned_log.CloseDefaultLogger()
+		tuned_log.InfoPrintToUserOnce("Remote shutdown requested")
 
 		cfs.termChan <- syscall.SIGTERM
 		return
@@ -65,5 +61,6 @@ func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Reque
 	}
 
 	cfs.PrintRequestSummary(req)
+	respW.Header().Set("Cache-Control", "no-store")
 	cfs.Handler.ServeHTTP(respW, req)
 }
