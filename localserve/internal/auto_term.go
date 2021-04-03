@@ -13,7 +13,7 @@ type AutoTerminateWatch struct {
 	currentTime    time.Duration
 	mux            sync.Mutex
 	startOnce      sync.Once
-	TermChan       chan os.Signal
+	termChan       chan os.Signal
 }
 
 func (atw *AutoTerminateWatch) DecTimerBySec() bool {
@@ -44,7 +44,7 @@ func (atw *AutoTerminateWatch) theLoop() {
 		tunedLogger := tuned_log.GetDefaultLogger()
 		tuned_log.InfoPrintToUser("\nAuto-Terminating ...", tunedLogger)
 		tuned_log.CloseDefaultLogger()
-		atw.TermChan <- syscall.SIGTERM
+		atw.termChan <- syscall.SIGTERM
 	}()
 }
 

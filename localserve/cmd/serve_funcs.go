@@ -48,11 +48,12 @@ func getFileSystem(doneChan chan os.Signal) *internal.CustomFileServer {
 		convertedIdleTimeout := time.Duration(flagIdleTimeout) * time.Second
 		return internal.NewCustomFileServerWithTimeout(
 			handler,
+			doneChan,
 			convertedIdleTimeout,
 			doneChan,
 		)
 	} else {
-		return internal.NewCustomFileServer(handler)
+		return internal.NewCustomFileServer(handler, doneChan)
 	}
 }
 
@@ -69,6 +70,7 @@ func startServer() {
 	fs := getFileSystem(done)
 
 	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
+
 	srv := &http.Server{
 		Addr:        getFullServeAddr(),
 		Handler:     fs,

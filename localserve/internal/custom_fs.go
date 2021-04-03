@@ -5,27 +5,30 @@ import (
 	"localserve/localserve/internal/tuned_log"
 	"net/http"
 	"os"
+	"syscall"
 	"time"
 )
 
 // Custom Handler that prints requested URLs before serving
 type CustomFileServer struct {
-	Handler http.Handler
-	atw     *AutoTerminateWatch // for auto-termination
+	Handler  http.Handler
+	atw      *AutoTerminateWatch // for auto-termination
+	termChan chan os.Signal
 }
 
-func NewCustomFileServerWithTimeout(h http.Handler, maxIdleTime time.Duration,
-	termChannel chan os.Signal) *CustomFileServer {
+func NewCustomFileServerWithTimeout(h http.Handler, fsTermChan chan os.Signal, maxIdleTime time.Duration,
+	atwTermChan chan os.Signal) *CustomFileServer {
 
 	atw := &AutoTerminateWatch{
 		MaxIdleTimeout: maxIdleTime,
 		currentTime:    maxIdleTime,
-		TermChan:       termChannel,
+		termChan:       atwTermChan,
 	}
 
 	cfs := &CustomFileServer{
-		Handler: h,
-		atw:     atw,
+		Handler:  h,
+		atw:      atw,
+		termChan: fsTermChan,
 	}
 
 	cfs.atw.StartTimerOnce()
@@ -33,8 +36,11 @@ func NewCustomFileServerWithTimeout(h http.Handler, maxIdleTime time.Duration,
 	return cfs
 }
 
-func NewCustomFileServer(h http.Handler) *CustomFileServer {
-	return &CustomFileServer{Handler: h, atw: nil}
+func NewCustomFileServer(h http.Handler, fsTermChan chan os.Signal) *CustomFileServer {
+	return &CustomFileServer{
+		Handler: h, atw: nil,
+		termChan: fsTermChan,
+	}
 }
 
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
@@ -45,6 +51,15 @@ func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
+	if req.Method == "GET" && req.URL.String() == "/shutdown" {
+		tunedLogger := tuned_log.GetDefaultLogger()
+		tuned_log.InfoPrintToUser("Remote shutdown requested", tunedLogger)
+		tuned_log.CloseDefaultLogger()
+
+		cfs.termChan <- syscall.SIGTERM
+		return
+	}
+
 	if cfs.atw != nil {
 		cfs.atw.ResetTimer() // every new request, the atw timer gets reset
 	}
