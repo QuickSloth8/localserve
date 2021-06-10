@@ -58,7 +58,7 @@ func getFileSystem(doneChan chan os.Signal) *internal.CustomFileServer {
 }
 
 func startServer() {
-	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
+	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n")
 
 	// set global silent output flag in tuned_log package
 	tuned_log.SetSilent(viper.GetBool("silent"))
@@ -69,7 +69,7 @@ func startServer() {
 
 	fs := getFileSystem(done)
 
-	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
+	tuned_log.InfoPrintToUser(getServeConfigsStr())
 
 	srv := &http.Server{
 		Addr:        getFullServeAddr(),
@@ -89,9 +89,9 @@ func startServer() {
 			if _, ok := err.(*net.OpError); ok && err.(*net.OpError).Op == "listen" {
 				// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
 				msg := fmt.Sprintf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
-				tuned_log.ErrorPrintToUser(msg, tunedLogger)
+					tuned_log.ErrorPrintToUser(msg)
 			} else {
-				tunedLogger.Fatal(err)
+				tuned_log.Fatal(err)
 			}
 		}
 	}()
@@ -101,7 +101,7 @@ func startServer() {
 
 	timeoutSecs := 30 * time.Second
 	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
-	tuned_log.InfoPrintToUser(msg, tunedLogger)
+	tuned_log.InfoPrintToUser(msg)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutSecs)
 	// ctx := context.Background()

@@ -45,12 +45,12 @@ func NewCustomFileServer(h http.Handler, fsTermChan chan os.Signal) *CustomFileS
 
 func (cfs CustomFileServer) PrintRequestSummary(req *http.Request) {
 	msg := fmt.Sprintf("%s %s", req.Method, req.URL)
-	tuned_log.InfoPrintToUserOnce(msg)
+	tuned_log.InfoPrintToUser(msg)
 }
 
 func (cfs CustomFileServer) ServeHTTP(respW http.ResponseWriter, req *http.Request) {
 	if req.Method == "GET" && req.URL.String() == "/shutdown" {
-		tuned_log.InfoPrintToUserOnce("Remote shutdown requested")
+		tuned_log.InfoPrintToUser("Remote shutdown requested")
 
 		cfs.termChan <- syscall.SIGTERM
 		return

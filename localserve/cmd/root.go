@@ -2,13 +2,7 @@ package cmd
 
 import (
 	// homedir "github.com/mitchellh/go-homedir"
-	"localserve/localserve/internal/tuned_log"
-
 	"github.com/spf13/cobra"
-)
-
-var (
-	tunedLogger = tuned_log.GetDefaultLogger() // logger should be closed in Execute()
 )
 
 var (
@@ -26,7 +20,6 @@ device to a local http server`,
 
 // Execute executes the root command.
 func Execute() {
-	defer tuned_log.CloseDefaultLogger()
 	rootCmd.Execute()
 }
 

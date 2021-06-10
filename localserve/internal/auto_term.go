@@ -41,9 +41,7 @@ func (atw *AutoTerminateWatch) theLoop() {
 				break
 			}
 		}
-		tunedLogger := tuned_log.GetDefaultLogger()
-		tuned_log.InfoPrintToUser("\nAuto-Terminating ...", tunedLogger)
-		tuned_log.CloseDefaultLogger()
+		tuned_log.InfoPrintToUser("\nAuto-Terminating ...")
 		atw.termChan <- syscall.SIGTERM
 	}()
 }
