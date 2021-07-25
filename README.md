@@ -1,5 +1,8 @@
 # LocalServe - sharing files easily on LAN
 
+The goal is to make a portable HTTP server, for sharing files easily on LAN.
+The server should be fast, secure, and really easy to use.
+
 ## Features
 
 * Wide configurations options: default, cmd flags.
@@ -22,3 +25,9 @@
 * [ ] Config files support & custom configs saving and re-usage.
 * [ ] Download all (optionally with compression).
 * [ ] Cool UI related stuff, like animations, custom cursor, sounds.
+
+## Contributions
+
+As you can see, there are many feature yet to be implemented ... I would love every bit of help :)
+Feel free to send me your thoughts & ideas at quicksloth8@gmail.com.
+
