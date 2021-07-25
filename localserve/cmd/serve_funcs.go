@@ -58,10 +58,9 @@ func getFileSystem(doneChan chan os.Signal) *internal.CustomFileServer {
 }
 
 func startServer() {
-	defer tuned_log.InfoPrintToUser("\nThank you for choosing LocalServe :)\n", tunedLogger)
-
 	// set global silent output flag in tuned_log package
-	tuned_log.SetSilent(viper.GetBool("silent"))
+	tuned_log.SetLogging(viper.GetBool("log"))
+	tuned_log.SetLogToFile(viper.GetBool("log-to-file"))
 
 	// set keyboard interrupt listener channel
 	done := make(chan os.Signal)
@@ -69,7 +68,8 @@ func startServer() {
 
 	fs := getFileSystem(done)
 
-	tuned_log.InfoPrintToUser(getServeConfigsStr(), tunedLogger)
+	tunedLogger := tuned_log.GetDefaultLogger()
+	tunedLogger.InfoPrintToUser(getServeConfigsStr())
 
 	srv := &http.Server{
 		Addr:        getFullServeAddr(),
@@ -89,7 +89,7 @@ func startServer() {
 			if _, ok := err.(*net.OpError); ok && err.(*net.OpError).Op == "listen" {
 				// fmt.Printf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
 				msg := fmt.Sprintf("Opps! ... %q seems to be taken !\n\n", getFullServeAddr())
-				tuned_log.ErrorPrintToUser(msg, tunedLogger)
+				tunedLogger.ErrorPrintToUser(msg)
 			} else {
 				tunedLogger.Fatal(err)
 			}
@@ -101,7 +101,7 @@ func startServer() {
 
 	timeoutSecs := 30 * time.Second
 	msg := fmt.Sprintf("Server termination initiated (%v max)", timeoutSecs)
-	tuned_log.InfoPrintToUser(msg, tunedLogger)
+	tunedLogger.InfoPrintToUser(msg)
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeoutSecs)
 	// ctx := context.Background()

@@ -2,6 +2,7 @@ package tuned_log
 
 import (
 	"errors"
+	"io"
 	"os"
 	"sync"
 
@@ -41,19 +42,37 @@ var (
 	initOnce         = sync.Once{} // initDefaultLogger() once
 	refsCount        = defaultAppLoggerRefsCount{}
 	logFile          *os.File
-	silent           bool
-	defaultAppLogger *defaultLogger
+	logging          bool
+	logToFile        bool
+	defaultAppLogger *TunedLogger
 )
 
 func initDefaultLogger() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
-	var err error
-	// TODO: implement a log file size limitation method
-	logFile, err = os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
-	if err != nil {
-		panic(err)
+
+	var out io.Writer
+
+	if logging {
+		if logToFile {
+			var err error
+			// TODO: implement a log file size limitation or log rotation method
+			out, err = os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			out = zerolog.NewConsoleWriter()
+		}
+
+		// var err error
+		// // TODO: implement a log file size limitation or log rotation method
+		// out, err = os.OpenFile("log.log", os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+		// if err != nil {
+		// 	panic(err)
+		// }
+
+		defaultAppLogger = &TunedLogger{zerolog.New(out).With().Timestamp().Logger()}
 	}
-	defaultAppLogger = &defaultLogger{zerolog.New(logFile).With().Timestamp().Logger()}
 }
 
 func destroyDefaultLogger() {
@@ -61,9 +80,11 @@ func destroyDefaultLogger() {
 	defer refsCount.mux.Unlock()
 
 	// close all log files
-	err := logFile.Close()
-	if err != nil {
-		panic(err)
+	if logFile != nil {
+		err := logFile.Close()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	// reset package state to a fresh one
@@ -72,7 +93,7 @@ func destroyDefaultLogger() {
 	initOnce = sync.Once{} // new fresh instance
 }
 
-func GetDefaultLogger() *defaultLogger {
+func GetDefaultLogger() *TunedLogger {
 	initOnce.Do(initDefaultLogger)
 	refsCount.IncCount()
 	return defaultAppLogger

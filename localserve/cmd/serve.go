@@ -65,12 +65,6 @@ func init() {
 		"the directory to be served",
 	)
 
-	serveCmd.PersistentFlags().Bool(
-		"silent",
-		false,
-		"suppress all output to stdout",
-	)
-
 	serveCmd.PersistentFlags().Int(
 		"auto-term",
 		defaultIdleTimeout,

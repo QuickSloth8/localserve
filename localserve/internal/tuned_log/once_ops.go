@@ -8,14 +8,18 @@ package tuned_log
 
 func InfoOnce(msg string) {
 	onceLogger := GetDefaultLogger()
-	defer CloseDefaultLogger()
-	onceLogger.Info(msg)
+	if onceLogger != nil {
+		defer CloseDefaultLogger()
+		onceLogger.Info(msg)
+	}
 }
 
 func InfoPrintToUserOnce(msg string) {
 	onceLogger := GetDefaultLogger()
-	defer CloseDefaultLogger()
-	InfoPrintToUser(msg, onceLogger)
+	if onceLogger != nil {
+		defer CloseDefaultLogger()
+		onceLogger.InfoPrintToUser(msg)
+	}
 }
 
 // func WarnOnce(msg string) {

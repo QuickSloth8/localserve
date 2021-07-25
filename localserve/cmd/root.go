@@ -2,13 +2,9 @@ package cmd
 
 import (
 	// homedir "github.com/mitchellh/go-homedir"
-	"localserve/localserve/internal/tuned_log"
 
 	"github.com/spf13/cobra"
-)
-
-var (
-	tunedLogger = tuned_log.GetDefaultLogger() // logger should be closed in Execute()
+	"github.com/spf13/viper"
 )
 
 var (
@@ -26,23 +22,30 @@ device to a local http server`,
 
 // Execute executes the root command.
 func Execute() {
-	defer tuned_log.CloseDefaultLogger()
 	rootCmd.Execute()
 }
 
 func init() {
 	// cobra.OnInitialize(initConfig)
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
-	// rootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "author name for copyright attribution")
-	// rootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "name of license for the project")
-	// rootCmd.PersistentFlags().Bool("viper", true, "use Viper for configuration")
-	// viper.BindPFlag("author", rootCmd.PersistentFlags().Lookup("author"))
-	// viper.BindPFlag("useViper", rootCmd.PersistentFlags().Lookup("viper"))
 	// viper.SetDefault("author", "NAME HERE <EMAIL ADDRESS>")
 	// viper.SetDefault("license", "apache")
 
-	// rootCmd.AddCommand(addCmd)
-	// rootCmd.AddCommand(initCmd)
+	rootCmd.PersistentFlags().Bool(
+		"log",
+		false,
+		"log for monitoring and debugging",
+	)
+
+	rootCmd.PersistentFlags().Bool(
+		"log-to-file",
+		false,
+		`log output to file ./log.log`,
+	)
+
+	viper.BindPFlag("log",
+		rootCmd.PersistentFlags().Lookup("log"))
+	viper.BindPFlag("log-to-file",
+		rootCmd.PersistentFlags().Lookup("log-to-file"))
 }
 
 // func er(msg interface{}) {
